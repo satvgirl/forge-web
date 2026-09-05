@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<!--
+  Forge — Privacy Policy
+  ----------------------------------------------------------------------------
+  Drafted from the Forge codebase (what the app + backend actually collect as of
+  2026-09-05). Before publishing, replace every {{PLACEHOLDER}}:
+
+    {{OPERATOR}}       Legal name of the person/company operating Forge
+                       (e.g. "Jane Doe" or "Forge App Inc.")
+    {{JURISDICTION}}   Governing law / where the operator is based
+                       (e.g. "the Province of Ontario, Canada")
+    {{CONTACT_EMAIL}}  A monitored address, ideally on your domain
+                       (e.g. "privacy@forge-app.ca") — do NOT use a personal
+                       address you don't want publicly indexed.
+
+  This is a plain-language starting point, not legal advice. Have someone
+  qualified review it against PIPEDA / GDPR / CCPA before you rely on it, and
+  keep it in sync with the App Store "nutrition label" answers.
+
+  Hosting: self-contained (no external CSS/JS/fonts). Drop it at
+  <repo>/privacy/index.html so the URL is https://forge-app.ca/privacy
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Privacy Policy — Forge</title>
+<style>
+  :root {
+    --bg: #f9f7f3;
+    --surface: #ffffff;
+    --text: #2b2b2b;
+    --muted: #6b6b6b;
+    --rule: #e5e0d8;
+    --accent: #b06a3b;
+    --link: #9a5a2f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1917;
+      --surface: #232120;
+      --text: #e9e6e0;
+      --muted: #a5a09a;
+      --rule: #38352f;
+      --accent: #d9945f;
+      --link: #e0a276;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  h1 {
+    font-size: 30px;
+    line-height: 1.2;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  .dates {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 44px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 24px 0 8px;
+  }
+  p { margin: 12px 0; }
+  ul { margin: 12px 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  a { color: var(--link); }
+  strong { font-weight: 650; }
+  .lead {
+    font-size: 18px;
+    color: var(--text);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 4px 20px;
+    margin: 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .toc {
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .toc ol { padding-left: 20px; }
+  .toc a { color: var(--link); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 14px;
+  }
+  code {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Forge</p>
+  <h1>Privacy Policy</h1>
+  <p class="dates">Effective 5 September 2026 · Last updated 5 September 2026</p>
+</header>
+
+<p class="lead">
+  Forge is a strength-training app: you log your workouts and a companion
+  creature grows as you train. This policy explains what information Forge
+  collects, why, and the choices you have. It covers the Forge iOS app and its
+  backend service.
+</p>
+
+<p>
+  Forge is operated by {{OPERATOR}} (&ldquo;we,&rdquo; &ldquo;us&rdquo;).
+  If you have questions about this policy or your data, contact us at
+  <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.
+</p>
+
+<nav class="toc">
+  <ol>
+    <li><a href="#collect">Information we collect</a></li>
+    <li><a href="#dont-collect">What we don&rsquo;t collect</a></li>
+    <li><a href="#use">How we use your information</a></li>
+    <li><a href="#storage">Where your information is stored</a></li>
+    <li><a href="#sharing">How we share information</a></li>
+    <li><a href="#retention">How long we keep it</a></li>
+    <li><a href="#rights">Your rights and choices</a></li>
+    <li><a href="#international">International users</a></li>
+    <li><a href="#children">Children&rsquo;s privacy</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#changes">Changes to this policy</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+</nav>
+
+<h2 id="collect">1. Information we collect</h2>
+
+<h3>Information you provide</h3>
+<ul>
+  <li><strong>Your name</strong> — the display name you enter during onboarding
+      or later change in Settings. Used only to personalize the app.</li>
+  <li><strong>Your appearance preference</strong> — the accent colour you pick
+      for your companion.</li>
+  <li><strong>Your workouts</strong> — for each session you log: the date, an
+      optional title you choose (for example &ldquo;Push Day&rdquo;), and each
+      exercise&rsquo;s name, weight, repetitions, and sets. Forge derives totals
+      (such as training volume) and your companion&rsquo;s progress from this.</li>
+</ul>
+
+<h3>Information from Sign in with Apple</h3>
+<p>
+  Forge uses <strong>Sign in with Apple</strong> for accounts. When you sign in,
+  Apple gives Forge a stable identifier that is unique to your Apple ID and to
+  Forge. We store this identifier to recognise your account on future sign-ins.
+</p>
+<p>
+  We do <strong>not</strong> receive or store your email address, real name, or
+  Apple ID credentials. Apple&rsquo;s handling of Sign in with Apple is governed
+  by <a href="https://www.apple.com/legal/privacy/" rel="noopener">Apple&rsquo;s
+  Privacy Policy</a>.
+</p>
+
+<h3>Information collected automatically</h3>
+<p>
+  When the app communicates with our servers, our hosting infrastructure records
+  standard technical information for operating and securing the service:
+  the time of the request, which feature or endpoint was used, your Forge account
+  identifier, your device&rsquo;s IP address, and diagnostic details when an
+  error occurs. These logs are used for debugging, security, and reliability.
+  They are not used for advertising or profiling.
+</p>
+
+<h3>Information stored on your device</h3>
+<p>
+  Forge keeps a login token in the iOS Keychain so you stay signed in, and a
+  local copy of your account details (identifier, name, colour, subscription
+  tier) so the app can start without a network request. This data stays on your
+  device and is removed when you sign out or delete the app.
+</p>
+
+<div class="card">
+<table>
+  <thead>
+    <tr><th>Category</th><th>Examples</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Account identity</td>
+      <td>Sign in with Apple identifier, account creation date</td>
+      <td>Create and secure your account</td>
+    </tr>
+    <tr>
+      <td>Profile</td>
+      <td>Display name, accent colour</td>
+      <td>Personalise the app</td>
+    </tr>
+    <tr>
+      <td>Fitness activity</td>
+      <td>Workout dates, titles, exercises, weight/reps/sets, derived volume and streaks</td>
+      <td>The core feature &mdash; track training and grow your companion</td>
+    </tr>
+    <tr>
+      <td>Subscription status</td>
+      <td>Free or Pro tier, monthly workout count</td>
+      <td>Apply the free-tier monthly limit</td>
+    </tr>
+    <tr>
+      <td>Diagnostics</td>
+      <td>Request logs, IP address, error traces</td>
+      <td>Operate, debug, and secure the service</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="dont-collect">2. What we don&rsquo;t collect</h2>
+<p>Forge does not collect, and has no code to collect:</p>
+<ul>
+  <li>your email address or a password;</li>
+  <li>your precise or approximate location;</li>
+  <li>Apple Health / HealthKit data;</li>
+  <li>your contacts, photos, calendars, or files;</li>
+  <li>device advertising identifiers;</li>
+  <li>analytics or behavioural telemetry from third-party SDKs (Forge includes none).</li>
+</ul>
+
+<h2 id="use">3. How we use your information</h2>
+<ul>
+  <li>To provide the app: authenticate you, save your workouts, and calculate
+      your companion&rsquo;s stage, intensity, and progress.</li>
+  <li>To enforce the free tier&rsquo;s monthly workout limit.</li>
+  <li>To keep the service running, diagnose problems, and protect against abuse
+      and security threats.</li>
+  <li>To respond to your support or privacy requests.</li>
+</ul>
+<p>
+  We do not sell your personal information, we do not share it for advertising,
+  and we do not use it to build profiles of you.
+</p>
+
+<h2 id="storage">4. Where your information is stored</h2>
+<p>
+  Your account and workout data are stored in a managed PostgreSQL database
+  hosted on <strong>Amazon Web Services</strong> in the United States (Ohio
+  region). Data is encrypted in transit (HTTPS) and at rest. Automated database
+  backups are retained for up to about seven days.
+</p>
+
+<h2 id="sharing">5. How we share information</h2>
+<p>We share information only in these cases:</p>
+<ul>
+  <li><strong>Service providers.</strong> Amazon Web Services provides our
+      hosting, database, logging, and content delivery. AWS processes data on
+      our behalf under its own security and privacy commitments.</li>
+  <li><strong>Apple.</strong> Sign in with Apple is provided by Apple as part of
+      authentication.</li>
+  <li><strong>Legal reasons.</strong> If required by law, or to protect the
+      rights, safety, or property of Forge, our users, or others.</li>
+  <li><strong>Business transfer.</strong> If Forge is involved in a merger,
+      acquisition, or sale of assets, your information may be transferred, and we
+      will notify you of any change in ownership or use of your personal data.</li>
+</ul>
+<p>
+  <strong>Payments.</strong> Forge does not currently process any payments. If a
+  paid subscription launches, billing will be handled by Apple and/or a
+  PCI-compliant payment processor, and this policy will be updated to describe
+  it. Forge does not receive or store your card details.
+</p>
+<p>
+  <strong>Advertising and analytics.</strong> Forge shows no third-party ads and
+  uses no third-party analytics services. If that changes, we will update this
+  policy and, where required, ask for your consent first.
+</p>
+
+<h2 id="retention">6. How long we keep it</h2>
+<ul>
+  <li>Your account and workout data are kept for as long as your account
+      exists.</li>
+  <li>When your account is deleted, your personal data is removed from the live
+      database. Copies in routine backups age out on their normal cycle (about
+      seven days); diagnostic logs age out on their retention schedule.</li>
+  <li>We may retain limited information where necessary to comply with legal
+      obligations or resolve disputes.</li>
+</ul>
+
+<h2 id="rights">7. Your rights and choices</h2>
+<p>
+  Depending on where you live, you may have rights to access, correct, export,
+  or delete your personal information, and to object to or restrict certain
+  processing. We honour these requests regardless of your location.
+</p>
+<ul>
+  <li><strong>Access or correct.</strong> You can view and edit your name and
+      workout history in the app. For a full copy of your data, email us.</li>
+  <li><strong>Delete your account.</strong> Email
+      <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a> from the request
+      and we will delete your account and associated workout data within
+      30&nbsp;days. Deleting your account is permanent. (In-app account deletion
+      is in development and will be added to Settings.)</li>
+  <li><strong>Sign out.</strong> Signing out removes your login token and cached
+      profile from the device.</li>
+  <li><strong>Withdraw from the service.</strong> Deleting the app stops all
+      further data collection; it does not by itself delete your server-side
+      account &mdash; use the deletion request above for that.</li>
+</ul>
+<p>
+  We will not discriminate against you for exercising any of these rights. If you
+  are in the EEA or UK and believe we have mishandled your data, you may complain
+  to your local supervisory authority.
+</p>
+
+<h2 id="international">8. International users</h2>
+<p>
+  Forge is operated from {{JURISDICTION}} and stores data in the United States.
+  If you use Forge from outside the United States, you understand that your
+  information will be transferred to and processed in the United States, which
+  may have different data-protection laws than your country. Where required, we
+  rely on appropriate safeguards for such transfers.
+</p>
+
+<h2 id="children">9. Children&rsquo;s privacy</h2>
+<p>
+  Forge is not directed to children. We do not knowingly collect personal
+  information from anyone under 13 (or under the minimum age of digital consent
+  in your country, such as 16 in parts of the EEA). If you believe a child has
+  provided us personal information, contact us and we will delete it.
+</p>
+
+<h2 id="security">10. Security</h2>
+<p>
+  We protect your information with encryption in transit and at rest, a database
+  that is not publicly reachable from the internet, scoped access controls, and
+  short-lived login tokens. No method of transmission or storage is completely
+  secure, so we cannot guarantee absolute security, but we work to protect your
+  information and to address vulnerabilities promptly.
+</p>
+
+<h2 id="changes">11. Changes to this policy</h2>
+<p>
+  We may update this policy as Forge evolves. When we do, we will change the
+  &ldquo;Last updated&rdquo; date above. For material changes, we will provide a
+  more prominent notice, such as in the app or on the App Store listing, before
+  the change takes effect.
+</p>
+
+<h2 id="contact">12. Contact</h2>
+<p>
+  Questions, requests, or complaints about your privacy:
+  <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.
+</p>
+<p>
+  {{OPERATOR}}<br>
+  {{JURISDICTION}}
+</p>
+
+<footer>
+  &copy; 2026 {{OPERATOR}}. Forge and the Forge companion are part of the Forge app.
+</footer>
+</div>
+</body>
+</html>
