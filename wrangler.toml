@@ -1,0 +1,24 @@
+name = "forge-web"
+main = "src/worker.js"
+compatibility_date = "2026-09-19"
+
+[assets]
+directory = "./public"
+# Left at the default ("none"): a request with no matching static file falls
+# through to the Worker's fetch() handler instead of being auto-served by the
+# asset system. That's required so /api/* routes are reachable — the Worker
+# itself serves public/404.html (with a real 404 status) for genuine typos.
+binding = "ASSETS"
+
+[[kv_namespaces]]
+binding = "WAITLIST"
+id = "REPLACE_WITH_KV_NAMESPACE_ID" # `wrangler kv namespace create WAITLIST`
+
+# Attach these in the Cloudflare dashboard (Workers & Pages → forge-web →
+# Settings → Domains & Routes) after the zone is on Cloudflare — see
+# MIGRATION.md. Uncommenting here isn't required; custom domains are managed
+# outside wrangler.toml by default.
+# routes = [
+#   { pattern = "forge-app.ca", custom_domain = true },
+#   { pattern = "www.forge-app.ca", custom_domain = true }
+# ]
