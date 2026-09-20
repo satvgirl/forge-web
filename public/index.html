@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<!-- Forge launch / waitlist page. Waitlist form posts to /api/waitlist (Cloudflare Worker). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Forge turns your strength training into a companion dragon that grows as you do. Private beta on iOS — join the waitlist.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Forge — Build your dragon, build yourself.">
+<meta property="og:description" content="A strength-training app where a companion dragon grows as your training adds up. Private beta on iOS — join the waitlist.">
+<meta property="og:url" content="https://forge-app.ca/">
+<link rel="icon" type="image/png" href="/images/egg-copper.png">
+<title>Forge — Build your dragon, build yourself.</title>
+<style>
+  :root {
+    --bg: #f9f7f3; --surface: #ffffff; --text: #2b2b2b;
+    --muted: #6b6b6b; --rule: #e5e0d8; --accent: #b06a3b; --link: #9a5a2f;
+    --primary: #9caf88; --primary-hover: #87996f; --primary-text: #20291c;
+    --error: #b3432e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1917; --surface: #232120; --text: #e9e6e0;
+      --muted: #a5a09a; --rule: #38352f; --accent: #d9945f; --link: #e0a276;
+      --primary: #a9bd93; --primary-hover: #94aa7b; --primary-text: #181f14;
+      --error: #e08b78;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--link); }
+  h1, h2, h3 { font-weight: 700; letter-spacing: -0.01em; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* header */
+  .site-header { padding: 20px 0; }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+  .brand img { width: 22px; height: 22px; object-fit: contain; }
+  .site-header nav { display: flex; gap: 20px; }
+  .site-header nav a { font-size: 14px; text-decoration: none; color: var(--muted); }
+  .site-header nav a:hover { color: var(--link); }
+
+  /* hero */
+  .hero { padding: 28px 0 56px; text-align: center; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.14em; font-size: 12px;
+    font-weight: 600; color: var(--accent); margin: 0 0 14px;
+  }
+  .hero h1 { font-size: 40px; line-height: 1.15; margin: 0 0 18px; }
+  .hero .lead { font-size: 18px; color: var(--muted); max-width: 520px; margin: 0 auto 32px; }
+  .egg-art { width: 190px; height: auto; margin: 0 auto 28px; display: block; }
+
+  /* waitlist form */
+  .waitlist-card {
+    background: var(--surface); border: 0.5px solid var(--rule); border-radius: 12px;
+    padding: 28px 24px; max-width: 460px; margin: 0 auto 20px; text-align: left;
+  }
+  .waitlist-card h2 { font-size: 17px; margin: 0 0 4px; }
+  .waitlist-card .sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+  .field-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .field-row input[type="email"] {
+    flex: 1 1 220px; min-width: 0; padding: 12px 14px; font-size: 16px;
+    border: 0.5px solid var(--rule); border-radius: 8px; background: var(--bg); color: var(--text);
+  }
+  .field-row input[type="email"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .btn-primary {
+    display: inline-block; border: none; border-radius: 8px; padding: 12px 20px;
+    background: var(--primary); color: var(--primary-text); font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .fine-print { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+  .form-message { font-size: 14px; margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; }
+  .form-message.success { background: color-mix(in srgb, var(--primary) 22%, transparent); color: var(--text); }
+  .form-message.error { color: var(--error); }
+
+  .ghost-link { display: inline-block; margin-top: 8px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .ghost-link:hover { color: var(--link); }
+
+  /* how it works */
+  .how { padding: 8px 0 56px; }
+  .how h2 { font-size: 24px; text-align: center; margin: 0 0 32px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface); border: 0.5px solid var(--rule); border-radius: 12px; padding: 20px;
+  }
+  .card h3 { font-size: 16px; margin: 0 0 8px; color: var(--accent); }
+  .card p { font-size: 15px; color: var(--muted); margin: 0; }
+
+  /* values strip */
+  .values { padding: 0 0 56px; }
+  .values ul {
+    list-style: none; margin: 0; padding: 0; display: flex; justify-content: center;
+    flex-wrap: wrap; gap: 10px 28px; text-align: center;
+  }
+  .values li { font-size: 14px; color: var(--muted); }
+
+  /* final CTA */
+  .final-cta { padding: 40px 0 56px; text-align: center; border-top: 1px solid var(--rule); }
+  .final-cta h2 { font-size: 24px; margin: 0 0 10px; }
+  .final-cta p { color: var(--muted); margin: 0 0 22px; }
+
+  footer {
+    padding: 24px 0 48px; color: var(--muted); font-size: 14px; text-align: center;
+  }
+  footer a { color: var(--link); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <img src="/images/egg-copper.png" width="22" height="22" alt="">
+      Forge
+    </a>
+    <nav>
+      <a href="/about">About</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Private beta &middot; iOS</p>
+      <h1>Build your dragon,<br>build yourself.</h1>
+      <p class="lead">
+        Forge turns your strength training into a companion dragon that grows
+        as you do &mdash; hatching, learning, and changing character the more
+        consistently you show up. No leaderboards, no shame, just your
+        progress made visible.
+      </p>
+
+      <img class="egg-art" src="/images/egg-copper.png" width="1024" height="1024" alt="A dragon egg, the copper-accented companion you grow in Forge">
+
+
+      <div class="waitlist-card" id="waitlist">
+        <h2>Get your invite</h2>
+        <p class="sub">Be first to know when the beta opens.</p>
+        <form id="waitlist-form" action="/api/waitlist" method="post" novalidate>
+          <label for="email" class="sr-only">Email address</label>
+          <div class="field-row">
+            <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" inputmode="email">
+            <button type="submit" class="btn-primary">Join the waitlist</button>
+          </div>
+          <label for="company" class="sr-only">Leave this field blank</label>
+          <input type="text" id="company" name="company" class="hp" tabindex="-1" autocomplete="off">
+          <p class="fine-print">No spam, ever. See our <a href="/privacy">Privacy Policy</a>.</p>
+          <p id="waitlist-message" class="form-message" role="status" aria-live="polite" hidden></p>
+        </form>
+      </div>
+
+      <a class="ghost-link" href="#how-it-works">See how it works &darr;</a>
+    </div>
+  </section>
+
+  <section class="how" id="how-it-works">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Log your lifts</h3>
+          <p>Track sets, reps, and weight &mdash; the same simple logging you&rsquo;d use on paper, just faster.</p>
+        </article>
+        <article class="card">
+          <h3>Watch it grow</h3>
+          <p>Every workout adds to your dragon&rsquo;s story. As your lifetime training builds up, it grows from a quiet egg into a fully-formed companion.</p>
+        </article>
+        <article class="card">
+          <h3>Feel the streak</h3>
+          <p>Train consistently and your dragon&rsquo;s mood shows it &mdash; calm on a rest week, fierce when you&rsquo;re on a roll.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="values">
+    <div class="wrap">
+      <ul>
+        <li>Any fitness level, any starting point</li>
+        <li>No ads, no third-party tracking</li>
+        <li>Built and run by one person, not a company</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="wrap">
+      <h2>Ready when you are.</h2>
+      <p>Join the waitlist and we&rsquo;ll email you the moment the beta opens.</p>
+      <a class="btn-primary" href="#waitlist">Join the waitlist</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  &copy; 2026 Judy Leach &middot;
+  <a href="/about">About</a> &middot;
+  <a href="/privacy">Privacy</a> &middot;
+  <a href="/terms">Terms</a>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('waitlist-form');
+  if (!form) return;
+  var msg = document.getElementById('waitlist-message');
+  var btn = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var email = form.email.value.trim();
+    if (!email) return;
+
+    btn.disabled = true;
+    msg.hidden = true;
+
+    fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, company: form.company.value })
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function (result) {
+        btn.disabled = false;
+        msg.hidden = false;
+        if (result.ok && result.data.ok) {
+          form.reset();
+          msg.className = 'form-message success';
+          msg.textContent = "You're on the list — we'll be in touch when the beta opens.";
+        } else {
+          msg.className = 'form-message error';
+          msg.textContent = (result.data && result.data.error) || 'Something went wrong. Please try again.';
+        }
+      })
+      .catch(function () {
+        btn.disabled = false;
+        msg.hidden = false;
+        msg.className = 'form-message error';
+        msg.textContent = 'Something went wrong. Please try again.';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>

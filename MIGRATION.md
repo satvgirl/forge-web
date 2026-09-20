@@ -1,0 +1,160 @@
+# Migrating forge-app.ca: GitHub Pages → Cloudflare Workers
+
+**Status: completed 2026-09-19.** `forge-app.ca` is live on Cloudflare
+Workers (nameservers `chance.ns.cloudflare.com` / `surina.ns.cloudflare.com`).
+This doc is kept as the record of what was done and as a rollback reference
+— see the note on Step 7 in particular, since what actually worked differs
+slightly from the originally-planned mechanism.
+
+This is the runbook for moving `forge-app.ca` off GitHub Pages onto
+Cloudflare Workers (static assets + the `/api/waitlist` route in
+`src/worker.js`). **Follow it in order — steps 1–6 are all reversible /
+non-production-affecting; step 7 is the live cutover.**
+
+## Background (found while planning this migration)
+
+- **Registrar of record is AWS Route53 Domains** (whois shows registrar
+  `Gandi`/reseller `Amazon Registrar, Inc.` — the standard signature of a
+  `.ca` domain bought through Route53 Domains, since Amazon isn't itself
+  accredited for `.ca`). **Nameserver changes happen in the Route53 console
+  → Registered domains → `forge-app.ca`, not at Gandi directly.**
+- The current Route53 hosted zone (`Z088178031SES09ERAT3F`) also holds an
+  **issued wildcard ACM certificate** (`forge-app.ca` + `*.forge-app.ca`)
+  validated via a CNAME record, currently attached (unused in live DNS) to
+  the avatar CDN's CloudFront distribution. Decision: **keep the
+  certificate** — it's reusable later for `api.forge-app.ca`
+  (`forge` repo's `Documentation/ROADMAP.md` item 1.7) so its DNS validation
+  record must be recreated in Cloudflare too. The CloudFront alias itself is
+  confirmed unused; no action needed there.
+- No DMARC or CAA record exists on the zone today — this migration
+  preserves that (doesn't add either), it's parity-only.
+
+## Step 1 — Add the zone to Cloudflare
+
+In the Cloudflare dashboard: **Add a site** → `forge-app.ca` → pick the Free
+plan → Cloudflare scans existing DNS and shows you a pending zone. It'll give
+you two nameservers (e.g. `xxx.ns.cloudflare.com`, `yyy.ns.cloudflare.com`).
+**Don't change anything at the registrar yet.**
+
+## Step 2 — Recreate the non-web DNS records
+
+Cloudflare's auto-scan usually picks up the `A`/`AAAA`/`www` `CNAME` already
+(pointing at GitHub Pages) — those get replaced in Step 4, so ignore them.
+**Manually add these** (all **DNS only**, grey-clouded, not proxied — MX and
+these TXT/CNAME records must not be proxied):
+
+| Type | Name | Value | Priority |
+|---|---|---|---|
+| MX | `forge-app.ca` | `mx.zohocloud.ca` | 10 |
+| MX | `forge-app.ca` | `mx2.zohocloud.ca` | 20 |
+| MX | `forge-app.ca` | `mx3.zohocloud.ca` | 50 |
+| TXT | `forge-app.ca` | `v=spf1 include:zohocloud.ca ~all` | — |
+| TXT | `forge-app.ca` | `zoho-verification=zb62907535.zmverify.zohocloud.ca` | — |
+| TXT | `zmail._domainkey.forge-app.ca` | `v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCDwBYV6kPHb2/e0QLFy4dFy2Lo45GdINP9oxGOkS84z8v2oL+YOFJpLiSMsO1aI1OllbvIahmJJ9iblNLdWBLVusDmLsgRrigEpNLKNSiMDG4A+4Tvs9Kyp77v3dNtdrfiOqfGJ+17PzE99ovB1AvEl9cN5G0+mIDIyPg4Vu5Q6wIDAQAB` | — |
+| CNAME | `_18a6b5ec0134a9944b3181001feb59ee.forge-app.ca` | `_0bebbfdd20c05a09f799af90882c4ef5.jkddzztszm.acm-validations.aws.` | — |
+
+Do **not** recreate `_github-pages-challenge-satvgirl` — it was GitHub Pages'
+domain-ownership proof and isn't needed once we're off GitHub Pages.
+
+## Step 3 — Install deps, create the KV namespace, deploy
+
+```bash
+cd ~/git_repos/forge-web
+npm install
+npx wrangler login                     # opens a browser, authorizes wrangler
+npx wrangler kv namespace create WAITLIST
+# copy the returned id into wrangler.toml, replacing REPLACE_WITH_KV_NAMESPACE_ID
+npx wrangler secret put ADMIN_TOKEN    # paste a long random string when prompted — this is how you'll authenticate `/api/waitlist/export`
+npx wrangler deploy
+```
+
+Verify at the `*.workers.dev` URL wrangler prints: check `/`, `/about`,
+`/privacy`, `/terms`, a bogus path (should show the custom 404), and submit
+the waitlist form.
+
+## Step 4 — Attach the custom domains
+
+Cloudflare dashboard → **Workers & Pages → forge-web → Settings → Domains &
+Routes → Add → Custom Domain** → add both `forge-app.ca` and
+`www.forge-app.ca`. This auto-creates the proxied DNS records Cloudflare
+needs — you don't manually add `A`/`AAAA` records for these.
+
+## Step 5 — Redirect `www` → apex
+
+Cloudflare dashboard → **Rules → Redirect Rules** → create a rule:
+`www.forge-app.ca/*` → `https://forge-app.ca/$1` (301, preserve query
+string). This replaces what GitHub Pages did automatically for the
+apex/`www` pair.
+
+**Gotcha hit doing this for real:** the match field matters. Setting it to
+**URI Path** with value `www.forge-app.ca/*` looks right but never fires —
+URI Path is only ever the path (`/foo`), never the hostname, so that
+condition can't match a real request. Use **Field: Hostname, Operator:
+equals, Value: `www.forge-app.ca`** instead. The rule showing "Active" in
+the dashboard does not mean the match condition is correct — test it with
+`curl -I https://www.forge-app.ca/` and confirm you get a `301`, not a `200`
+with real page content.
+
+## Step 6 — Verify the pending zone before touching anything live
+
+Query Cloudflare's assigned nameservers directly (works even while the zone
+is still "pending" at the registrar):
+
+```bash
+dig @<cloudflare-ns-1> forge-app.ca A
+dig @<cloudflare-ns-1> forge-app.ca MX
+dig @<cloudflare-ns-1> forge-app.ca TXT
+dig @<cloudflare-ns-1> zmail._domainkey.forge-app.ca TXT
+```
+
+Confirm MX/TXT/DKIM match Step 2's table exactly, and that `A`/`www` resolve
+(via the Custom Domain from Step 4) to Cloudflare, not GitHub Pages.
+
+## Step 7 — Cut over nameservers (the live step)
+
+**What actually worked, for this domain:** AWS Console → **Route53 →
+Hosted zones → forge-app.ca → Records** → edit the zone's own `NS` record
+in place, replacing the four `awsdns-*` values with Cloudflare's two
+(`chance.ns.cloudflare.com`, `surina.ns.cloudflare.com`). For this
+domain, the registry-level delegation and this Hosted Zone's own `NS`
+record are effectively the same value — editing it here was what the
+public internet actually picked up (confirmed via `dig @8.8.8.8 forge-app.ca
+NS` shortly after). **This means a rollback, if ever needed, is done the
+same way** — edit this same `NS` record back to the original four:
+`ns-71.awsdns-08.com`, `ns-998.awsdns-60.net`, `ns-1789.awsdns-31.co.uk`,
+`ns-1275.awsdns-31.org`.
+
+(The originally-planned path — Route53 → **Registered domains** →
+forge-app.ca → Edit name servers — is AWS's documented mechanism and may
+still work/be worth checking first on a future domain, but wasn't what was
+actually used here.)
+
+**Propagation took longer than the record TTLs suggested.** The *old* `NS`
+record itself had a 2-day (172800s) TTL at the registry level — resolvers
+that had it cached kept asking the old Route53 servers (which still had the
+stale GitHub Pages `A`/`AAAA` records) until that cache expired, regardless
+of the 60s TTL on the `A` record itself. In practice this cleared for major
+public resolvers (Google, Cloudflare's own 1.1.1.1) within about an hour,
+but don't be alarmed if `dig`-ing the `NS` record shows Cloudflare while `A`
+still shows GitHub Pages for a while after — that's expected, not a sign of
+misconfiguration.
+
+## Step 8 — Post-cutover verification
+
+All confirmed ✅ on 2026-09-19:
+
+- `dig forge-app.ca` from a normal resolver — returns Cloudflare, not
+  GitHub Pages IPs.
+- `https://forge-app.ca` and `https://www.forge-app.ca` both load; `www`
+  301s to the apex with path/query preserved.
+- **Real test email** sent to a `@forge-app.ca` Zoho mailbox — arrived.
+- Waitlist form submission on the live domain confirmed via the export
+  endpoint (`curl -H "Authorization: Bearer <ADMIN_TOKEN>"
+  https://forge-app.ca/api/waitlist/export`).
+
+## Step 9 — Cleanup (after a stable soak period — not same-day)
+
+- GitHub repo `satvgirl/forge-web` → Settings → Pages → disable/remove the
+  Pages site.
+- Once confident nothing depends on it, delete the now-dead Route53 hosted
+  zone (`Z088178031SES09ERAT3F`) to stop the small monthly charge for it.
