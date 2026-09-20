@@ -1,5 +1,11 @@
 # Migrating forge-app.ca: GitHub Pages → Cloudflare Workers
 
+**Status: completed 2026-09-19.** `forge-app.ca` is live on Cloudflare
+Workers (nameservers `chance.ns.cloudflare.com` / `surina.ns.cloudflare.com`).
+This doc is kept as the record of what was done and as a rollback reference
+— see the note on Step 7 in particular, since what actually worked differs
+slightly from the originally-planned mechanism.
+
 This is the runbook for moving `forge-app.ca` off GitHub Pages onto
 Cloudflare Workers (static assets + the `/api/waitlist` route in
 `src/worker.js`). **Follow it in order — steps 1–6 are all reversible /
@@ -80,6 +86,15 @@ Cloudflare dashboard → **Rules → Redirect Rules** → create a rule:
 string). This replaces what GitHub Pages did automatically for the
 apex/`www` pair.
 
+**Gotcha hit doing this for real:** the match field matters. Setting it to
+**URI Path** with value `www.forge-app.ca/*` looks right but never fires —
+URI Path is only ever the path (`/foo`), never the hostname, so that
+condition can't match a real request. Use **Field: Hostname, Operator:
+equals, Value: `www.forge-app.ca`** instead. The rule showing "Active" in
+the dashboard does not mean the match condition is correct — test it with
+`curl -I https://www.forge-app.ca/` and confirm you get a `301`, not a `200`
+with real page content.
+
 ## Step 6 — Verify the pending zone before touching anything live
 
 Query Cloudflare's assigned nameservers directly (works even while the zone
@@ -97,23 +112,45 @@ Confirm MX/TXT/DKIM match Step 2's table exactly, and that `A`/`www` resolve
 
 ## Step 7 — Cut over nameservers (the live step)
 
-AWS Console → **Route53 → Registered domains → forge-app.ca → Edit name
-servers** → replace the four `awsdns-*` nameservers with Cloudflare's two.
-`.ca` (CIRA) propagation is typically fast (often under an hour), but can
-take up to 24–48h depending on caching resolvers.
+**What actually worked, for this domain:** AWS Console → **Route53 →
+Hosted zones → forge-app.ca → Records** → edit the zone's own `NS` record
+in place, replacing the four `awsdns-*` values with Cloudflare's two
+(`chance.ns.cloudflare.com`, `surina.ns.cloudflare.com`). For this
+domain, the registry-level delegation and this Hosted Zone's own `NS`
+record are effectively the same value — editing it here was what the
+public internet actually picked up (confirmed via `dig @8.8.8.8 forge-app.ca
+NS` shortly after). **This means a rollback, if ever needed, is done the
+same way** — edit this same `NS` record back to the original four:
+`ns-71.awsdns-08.com`, `ns-998.awsdns-60.net`, `ns-1789.awsdns-31.co.uk`,
+`ns-1275.awsdns-31.org`.
+
+(The originally-planned path — Route53 → **Registered domains** →
+forge-app.ca → Edit name servers — is AWS's documented mechanism and may
+still work/be worth checking first on a future domain, but wasn't what was
+actually used here.)
+
+**Propagation took longer than the record TTLs suggested.** The *old* `NS`
+record itself had a 2-day (172800s) TTL at the registry level — resolvers
+that had it cached kept asking the old Route53 servers (which still had the
+stale GitHub Pages `A`/`AAAA` records) until that cache expired, regardless
+of the 60s TTL on the `A` record itself. In practice this cleared for major
+public resolvers (Google, Cloudflare's own 1.1.1.1) within about an hour,
+but don't be alarmed if `dig`-ing the `NS` record shows Cloudflare while `A`
+still shows GitHub Pages for a while after — that's expected, not a sign of
+misconfiguration.
 
 ## Step 8 — Post-cutover verification
 
-- `dig forge-app.ca` from a normal resolver — should return Cloudflare, not
+All confirmed ✅ on 2026-09-19:
+
+- `dig forge-app.ca` from a normal resolver — returns Cloudflare, not
   GitHub Pages IPs.
-- Load `https://forge-app.ca` and `https://www.forge-app.ca` in a browser
-  (confirm the redirect).
-- **Send a real test email** to a `@forge-app.ca` Zoho mailbox and confirm
-  it arrives — this is the one step that silently breaks if any Zoho record
-  from Step 2 was mistyped.
-- Submit the waitlist form on the live domain; confirm via
-  `npx wrangler kv key get --binding=WAITLIST <email>` or the export
-  endpoint (`curl -H "Authorization: Bearer <ADMIN_TOKEN>" https://forge-app.ca/api/waitlist/export`).
+- `https://forge-app.ca` and `https://www.forge-app.ca` both load; `www`
+  301s to the apex with path/query preserved.
+- **Real test email** sent to a `@forge-app.ca` Zoho mailbox — arrived.
+- Waitlist form submission on the live domain confirmed via the export
+  endpoint (`curl -H "Authorization: Bearer <ADMIN_TOKEN>"
+  https://forge-app.ca/api/waitlist/export`).
 
 ## Step 9 — Cleanup (after a stable soak period — not same-day)
 

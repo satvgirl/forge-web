@@ -12,7 +12,7 @@ binding = "ASSETS"
 
 [[kv_namespaces]]
 binding = "WAITLIST"
-id = "REPLACE_WITH_KV_NAMESPACE_ID" # `wrangler kv namespace create WAITLIST`
+id = "623c0ebdf23542fc90c35286f7396197"
 
 # Attach these in the Cloudflare dashboard (Workers & Pages → forge-web →
 # Settings → Domains & Routes) after the zone is on Cloudflare — see
