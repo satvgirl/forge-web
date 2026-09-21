@@ -35,7 +35,11 @@ async function parseBody(request) {
     contentType.includes("multipart/form-data")
   ) {
     const form = await request.formData();
-    return { email: form.get("email"), company: form.get("company") };
+    return {
+      email: form.get("email"),
+      company: form.get("company"),
+      source: form.get("source"),
+    };
   }
   return {};
 }
@@ -48,6 +52,9 @@ async function handleWaitlistSubmit(request, env) {
   const body = await parseBody(request);
   const email = String(body.email || "").trim().toLowerCase();
   const honeypot = String(body.company || "").trim();
+  // Free-text, attacker-controlled — cap length and strip control chars so a
+  // junk value can't do anything worse than show up oddly in the CSV export.
+  const source = String(body.source || "").trim().slice(0, 60).replace(/[\r\n]/g, "");
 
   // Bots that fill the hidden "company" field get a fake success — no store,
   // no signal back to them that they were caught.
@@ -61,7 +68,7 @@ async function handleWaitlistSubmit(request, env) {
 
   await env.WAITLIST.put(
     email,
-    JSON.stringify({ email, joinedAt: new Date().toISOString() })
+    JSON.stringify({ email, joinedAt: new Date().toISOString(), source })
   );
 
   return respond(request, true, null);
@@ -124,14 +131,16 @@ async function handleExport(request, env) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const rows = [["email", "joined_at"]];
+  const rows = [["email", "joined_at", "source"]];
   let cursor;
   do {
     const page = await env.WAITLIST.list({ cursor });
     for (const key of page.keys) {
       const raw = await env.WAITLIST.get(key.name);
-      const entry = raw ? JSON.parse(raw) : { email: key.name, joinedAt: "" };
-      rows.push([entry.email, entry.joinedAt]);
+      const entry = raw
+        ? JSON.parse(raw)
+        : { email: key.name, joinedAt: "", source: "" };
+      rows.push([entry.email, entry.joinedAt, entry.source || ""]);
     }
     cursor = page.list_complete ? undefined : page.cursor;
   } while (cursor);

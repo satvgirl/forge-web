@@ -39,6 +39,11 @@ idempotent). No third-party email/CRM service and no confirmation email —
 this keeps the site's "no ads, no third-party tracking" stance from the
 About page.
 
+**Campaign attribution:** link to the site with `?src=<label>` (e.g.
+`forge-app.ca/?src=instagram-bio`, `?src=reddit-xxfitness`) and the page
+picks it up into a hidden form field automatically — no extra step needed
+per link. Shows up as the `source` column in the export.
+
 To pull the signup list:
 
 ```bash

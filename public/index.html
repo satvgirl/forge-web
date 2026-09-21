@@ -163,6 +163,7 @@
           </div>
           <label for="company" class="sr-only">Leave this field blank</label>
           <input type="text" id="company" name="company" class="hp" tabindex="-1" autocomplete="off">
+          <input type="hidden" id="source" name="source" value="">
           <p class="fine-print">No spam, ever. See our <a href="/privacy">Privacy Policy</a>.</p>
           <p id="waitlist-message" class="form-message" role="status" aria-live="polite" hidden></p>
         </form>
@@ -225,6 +226,14 @@
   var msg = document.getElementById('waitlist-message');
   var btn = form.querySelector('button[type="submit"]');
 
+  try {
+    var src = new URLSearchParams(window.location.search).get('src');
+    if (src) {
+      form.source.value = src.slice(0, 60);
+      form.source.defaultValue = form.source.value;
+    }
+  } catch (e) {}
+
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     var email = form.email.value.trim();
@@ -236,7 +245,7 @@
     fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ email: email, company: form.company.value })
+      body: JSON.stringify({ email: email, company: form.company.value, source: form.source.value })
     })
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) {

@@ -52,12 +52,17 @@ the asset system intercept `/api/*` requests before the Worker ever saw them).
 ## Waitlist API
 
 `POST /api/waitlist` — JSON or form-encoded body (`email`, plus a hidden
-`company` honeypot field the real form never fills). Stores signups in the
-`WAITLIST` KV namespace keyed by lowercased email, so a repeat signup is an
-idempotent overwrite, not a duplicate. Responds JSON if the request's
-`Accept` header asks for it (the page's own `fetch()` call does), otherwise
-responds with a small server-rendered HTML page — this is what makes the
-form work with JavaScript disabled.
+`company` honeypot field the real form never fills, and a hidden `source`
+field). Stores signups in the `WAITLIST` KV namespace keyed by lowercased
+email, so a repeat signup is an idempotent overwrite, not a duplicate.
+Responds JSON if the request's `Accept` header asks for it (the page's own
+`fetch()` call does), otherwise responds with a small server-rendered HTML
+page — this is what makes the form work with JavaScript disabled.
+
+`source` is populated client-side from a `?src=` URL query param (see the
+inline `<script>` in `public/index.html`) — this is how marketing-campaign
+attribution works: link out with `?src=<channel-label>` and it flows through
+to the `source` column in the export, no per-link backend config needed.
 
 `GET /api/waitlist/export` — admin-only, gated on a Worker secret
 (`ADMIN_TOKEN`, set via `wrangler secret put`, never committed); returns all
