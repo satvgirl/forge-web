@@ -5,10 +5,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Forge turns your strength training into a companion dragon that grows as you do. Private beta on iOS — join the waitlist.">
+<meta name="description" content="Forge turns your strength training into a companion dragon that grows as you do. Private beta on iOS — sign up for an invite.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Forge — Build your dragon, build yourself.">
-<meta property="og:description" content="A strength-training app where a companion dragon grows as your training adds up. Private beta on iOS — join the waitlist.">
+<meta property="og:description" content="A strength-training app where a companion dragon grows as your training adds up. Private beta on iOS — sign up for an invite.">
 <meta property="og:url" content="https://forge-app.ca/">
 <link rel="icon" type="image/png" href="/images/egg-copper.png">
 <title>Forge — Build your dragon, build yourself.</title>
@@ -153,13 +153,13 @@
 
 
       <div class="waitlist-card" id="waitlist">
-        <h2>Get your invite</h2>
-        <p class="sub">Be first to know when the beta opens.</p>
+        <h2>Join the Forge beta</h2>
+        <p class="sub">I&rsquo;m looking for early testers on iPhone. Sign up and I&rsquo;ll send you an invite.</p>
         <form id="waitlist-form" action="/api/waitlist" method="post" novalidate>
           <label for="email" class="sr-only">Email address</label>
           <div class="field-row">
             <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" inputmode="email">
-            <button type="submit" class="btn-primary">Join the waitlist</button>
+            <button type="submit" class="btn-primary">Request an invite</button>
           </div>
           <label for="company" class="sr-only">Leave this field blank</label>
           <input type="text" id="company" name="company" class="hp" tabindex="-1" autocomplete="off">
@@ -205,9 +205,9 @@
 
   <section class="final-cta">
     <div class="wrap">
-      <h2>Ready when you are.</h2>
-      <p>Join the waitlist and we&rsquo;ll email you the moment the beta opens.</p>
-      <a class="btn-primary" href="#waitlist">Join the waitlist</a>
+      <h2>You&rsquo;re invited.</h2>
+      <p>Sign up and I&rsquo;ll send you a beta invite.</p>
+      <a class="btn-primary" href="#waitlist">Request an invite</a>
     </div>
   </section>
 </main>
@@ -258,7 +258,7 @@
         if (result.ok && result.data.ok) {
           form.reset();
           msg.className = 'form-message success';
-          msg.textContent = "You're on the list — we'll be in touch when the beta opens.";
+          msg.textContent = "You're on the list — I'll email you your beta invite.";
         } else {
           msg.className = 'form-message error';
           msg.textContent = (result.data && result.data.error) || 'Something went wrong. Please try again.';

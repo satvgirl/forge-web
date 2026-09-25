@@ -87,7 +87,7 @@ function respond(request, ok, error) {
 function htmlFallback(ok, error) {
   const heading = ok ? "You're on the list" : "Something went wrong";
   const message = ok
-    ? "We'll email you when the beta opens."
+    ? "I'll email you your beta invite."
     : error || "Please go back and try again.";
   const html = `<!DOCTYPE html>
 <html lang="en">
