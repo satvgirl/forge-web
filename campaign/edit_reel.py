@@ -1,12 +1,16 @@
-"""First cut of Reel 1 ("One workout. One hatch.") from the raw simulator capture.
+"""First cuts of the Instagram reels from raw simulator captures.
 
-Run:  python3 campaign/edit_reel.py [raw.mp4] [out.mp4]
-In:   campaign/footage/reel-hatch-raw.mp4  (scripts/record_reel.sh <udid> out.mp4 hatch)
-Out:  campaign/footage/reel-hatch-cut.mp4  (1080x1920, 30 fps, ~25 s, silent)
+Run:  python3 campaign/edit_reel.py [hatch|rest]      (default: hatch)
+In:   campaign/footage/reel-<name>-raw.mp4   (scripts/record_reel.sh <udid> out.mp4 <hatch|rest>)
+Out:  campaign/footage/reel-<name>-cut.mp4   (1080x1920, 30 fps, silent)
+      hatch ~25 s  "One workout. One hatch."
+      rest  ~14 s  "A quiet week" (rest is part of it)
 
-Needs ffmpeg and Pillow. Segment times below are seconds in the RAW file and
-were read off a recording; if you re-record, re-check them (the take varies by
-a second or two). Brand style: flat cream/charcoal/copper, no gradients.
+Needs ffmpeg and Pillow. Segment times are seconds in the 30 fps conversion of
+the raw take (footage/reel-<name>-30fps.mp4, written by this script): scrub that
+file, not the raw one. They were read off one recording; if you re-record,
+re-check them (takes vary by a second or two). Brand style: flat
+cream/charcoal/copper, no gradients.
 """
 import os
 import subprocess
@@ -15,8 +19,10 @@ import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-RAW = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "footage", "reel-hatch-raw.mp4")
-OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "footage", "reel-hatch-cut.mp4")
+NAME = sys.argv[1] if len(sys.argv) > 1 else "hatch"
+FOOTAGE = os.path.join(HERE, "footage")
+RAW = os.path.join(FOOTAGE, f"reel-{NAME}-raw.mp4")
+OUT = os.path.join(FOOTAGE, f"reel-{NAME}-cut.mp4")
 CDN = "https://d3ecy6kiy1ze2c.cloudfront.net"
 CREAM, CHARCOAL, COPPER, SAGE = "#f5f1e8", "#2c3e50", "#b87333", "#9caf88"
 FONT = "/System/Library/Fonts/Avenir Next.ttc"
@@ -25,19 +31,29 @@ PHONE_H = 1480
 PHONE_W = round(PHONE_H * 1206 / 2622)  # source is 1206x2622
 PX, PY = (W - PHONE_W) // 2, 150
 
-# (start, end, speed, caption) in seconds of the 30 fps conversion of the raw
-# take (footage/reel-hatch-30fps.mp4 - scrub that file, not the raw one: simctl
-# timestamps make seeks in the raw file land seconds off). Output length of a
-# segment is (end - start) / speed.
-SEGMENTS = [
-    (13.5, 17.5, 1.6, "One workout."),          # Home, the egg
-    (18.5, 24.5, 2.0, "Log a lift."),           # sheet opens, title typed
-    (24.5, 31.0, 2.2, "Quick search."),         # exercise search + pick
-    (31.5, 55.5, 4.8, "Tick off your sets."),   # sets entered and checked
-    (55.5, 57.0, 3.0, None),                    # Finish tap
-    (60.0, 65.5, 1.0, "Your dragon hatched."),  # celebration
-    (70.0, 73.0, 1.2, "Every set counts."),     # Progress
-]
+# (start, end, speed, caption) in seconds of the 30 fps conversion. Output
+# length of a segment is (end - start) / speed.
+REELS = {
+    "hatch": dict(pill_y=1440, min_pill=0, segments=[
+        (13.5, 17.5, 1.6, "One workout."),          # Home, the egg
+        (18.5, 24.5, 2.0, "Log a lift."),           # sheet opens, title typed
+        (24.5, 31.0, 2.2, "Quick search."),         # exercise search + pick
+        (31.5, 55.5, 4.8, "Tick off your sets."),   # sets entered and checked
+        (55.5, 57.0, 3.0, None),                    # Finish tap
+        (60.0, 65.5, 1.0, "Your dragon hatched."),  # celebration
+        (70.0, 73.0, 1.2, "Every set counts."),     # Progress
+    ]),
+    # The pill sits higher here so it covers Home's free-tier nudge row.
+    "rest": dict(pill_y=1295, min_pill=PHONE_W - 30, segments=[
+        (10.5, 14.0, 1.0, "A quiet week."),             # Home, the gentle dragon
+        (14.5, 17.5, 1.0, "Your dragon rests with you."),
+        (20.0, 23.0, 1.0, "No guilt. No lecture."),     # Progress: 0 workouts, 0-day streak
+        (28.0, 30.5, 1.0, "Come back when you're ready."),
+    ]),
+}
+SEGMENTS = REELS[NAME]["segments"]
+PILL_Y = REELS[NAME]["pill_y"]
+MIN_PILL = REELS[NAME]["min_pill"]
 END_CARD_SECONDS = 3.0
 
 
@@ -67,10 +83,10 @@ def caption(path, text):
     if text:
         f = font(54)
         tw = d.textlength(text, font=f)
-        pw, ph = tw + 90, 120
-        x, y = (W - pw) / 2, 1440  # inside the safe area (above the bottom ~340 px)
+        pw, ph = max(tw + 90, MIN_PILL), 120
+        x, y = (W - pw) / 2, PILL_Y  # inside the safe area (above the bottom ~340 px)
         d.rounded_rectangle((x, y, x + pw, y + ph), radius=60, fill=CREAM, outline=COPPER, width=4)
-        d.text((x + 45, y + (ph - 54) / 2 - 8), text, font=f, fill=CHARCOAL)
+        d.text((x + (pw - tw) / 2, y + (ph - 54) / 2 - 8), text, font=f, fill=CHARCOAL)
     f = font(26, 5)
     centered(d, 1650, "Demo account", f, (44, 62, 80, 190))
     im.save(path)
@@ -102,7 +118,7 @@ def main():
     # simctl records only when the screen changes (variable frame rate), so a
     # static screen has no frames inside a trim window. Make it constant first.
     global RAW
-    cfr = os.path.join(os.path.dirname(OUT), "reel-hatch-30fps.mp4")
+    cfr = os.path.join(FOOTAGE, f"reel-{NAME}-30fps.mp4")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", RAW, "-vf", "fps=30", "-an",
                     "-c:v", "libx264", "-crf", "14", "-pix_fmt", "yuv420p", cfr], check=True)
     RAW = cfr

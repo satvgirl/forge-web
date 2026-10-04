@@ -35,7 +35,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 - Caption: *Gentle, balanced, fierce. Your dragon's mood follows how many days you trained in the last week: fewer than two, it rests with you; two or three, it's steady; four or more, it's on a roll. And when life gets in the way, it just waits. No guilt, no lecture.*
 
 **Thu · Reel: "A rest week isn't failure"** (10–15s)
-- Footage: the Home screen with the gentle dragon; text overlays, calm voice-over or captions only.
+- Footage ✅ record with `scripts/record_reel.sh <udid> out.mp4 rest` (app repo), cut with `python3 campaign/edit_reel.py rest` → `footage/reel-rest-cut.mp4` (~15 s, captions: "A quiet week." / "Your dragon rests with you." / "No guilt. No lecture." / "Come back when you're ready." + end card). The app has no rest-week message, so keep the wording to what the gentle mood actually does.
 - Caption: *Missed a week? Your dragon didn't notice, or at least didn't mind. Come back when you're ready. 🌿*
 
 **Sat · Single: "Pick your dragon"** ✅ `assets/single/pick-your-dragon.png` (2×2 of the four colours)
