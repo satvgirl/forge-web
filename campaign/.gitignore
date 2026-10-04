@@ -1,3 +1,5 @@
 .art-cache/
 assets/
 footage/
+.signups-state.json
+signups.log
