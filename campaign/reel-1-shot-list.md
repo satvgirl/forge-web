@@ -46,6 +46,15 @@ Text style: Avenir Next Bold, charcoal `#2c3e50` on a cream `#f5f1e8` pill, or
 cream on dark footage — whichever reads. Keep text out of the top 250 px and
 bottom 340 px, where Instagram's UI covers it.
 
+## First cut (automated)
+
+`python3 campaign/edit_reel.py` turns `footage/reel-hatch-raw.mp4` into
+`footage/reel-hatch-cut.mp4`: 1080×1920, 30 fps, ~25 s, silent, with the
+speed-ups, cream background, rounded phone frame, caption pills, "Demo account"
+tag and the end card. The segment times at the top of the script are read off a
+specific take, so re-check them against `footage/reel-hatch-30fps.mp4` after any
+re-recording. Add music or audio in Instagram, then use the caption below.
+
 ## Run the recording
 
 ```bash
