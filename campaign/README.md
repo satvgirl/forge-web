@@ -12,13 +12,12 @@ the trust without putting a face on the account.
 
 ## Before you post anything
 
-1. **Check you can actually fulfil invites.** The site says "I'll send you an
+1. **Invites — sorted (2026-10-04).** An external TestFlight group is active and the first three signups were invited by email, so people can be onboarded. Keep sending invites promptly: they're sent by hand, so decide how often you'll batch them. (Original concern: The site says "I'll send you an
    invite." Per `Documentation/releasing_ios.md`, an *external* TestFlight
    group needs Beta App Review (hours to ~a day) and only an internal group
    skips it; internal testers must be users on your App Store Connect team
    (max 100). If no external group has passed review yet, submit one first, or
-   people will request an invite you can't send. Decide how you'll send
-   invites (public TestFlight link vs. email each person) and how fast.
+   people will request an invite you can't send.)
 2. **Art check.** The CDN art used here is clean (see `make_assets.py` for the
    two images to avoid). The app itself still serves `copper/mature-balanced.png`,
    which has a grey background and garbled text in the corner — worth fixing
