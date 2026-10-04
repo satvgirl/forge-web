@@ -38,7 +38,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 - Footage: the Home screen with the gentle dragon; text overlays, calm voice-over or captions only.
 - Caption: *Missed a week? Your dragon didn't notice, or at least didn't mind. Come back when you're ready. 🌿*
 
-**Sat · Single: "Pick your dragon"** — a 2×2 of the four colours (make from `copper/sage/gold/charcoal` hatchlings; extend `make_assets.py`)
+**Sat · Single: "Pick your dragon"** ✅ `assets/single/pick-your-dragon.png` (2×2 of the four colours)
 - Caption: *Copper, sage, gold or charcoal. Which one's yours? Tell me below. In Forge you pick at the start, and it's yours.*
 
 **Stories:** poll results from week 1; a question box "What would make you stick with strength training?" (real insight for the app).
@@ -67,7 +67,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 - Footage: the full-screen evolution celebration (debug session `Long-press dragon` triggers it for recording only).
 - Caption: *100,000 lbs, lifted a set at a time. This is the moment it all adds up. 🐉*
 
-**Thu · Carousel: "How to join the beta"** — 3 slides: 1. Request an invite (link in bio) 2. I send you a TestFlight invite 3. Hatch your egg. Add a "what to expect" slide: iPhone only, still being built, feedback welcome.
+**Thu · Carousel: "How to join the beta"** ✅ `assets/carousel-how-to-join/` (6 slides: request an invite → TestFlight invite → hatch your egg → what to expect → link in bio).
 - Caption: *We're looking for early testers on iPhone. Three steps, no payment. You'll shape what Forge becomes.*
 
 **Sat · Single: "Built by one person"** — the egg + "Made in Ontario by one person. No ads. No tracking."

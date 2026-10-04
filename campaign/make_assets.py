@@ -86,9 +86,11 @@ def slide(name, dragon=None, eyebrow=None, title=None, body=None, big=None, cta=
         top = y + 20
         bottom = h - (330 if body else 470 if cta else 200)
         paste_fit(canvas, dragon, (pad, top, w - 2 * pad, bottom - top))
-    if big:
-        f = font("bold", 96)
-        d.text(((w - d.textlength(big, font=f)) / 2, h - 560), big, font=f, fill=COPPER)
+    if big:  # a large step numeral in the empty middle of a text slide
+        f = font("heavy", 460)
+        top, bottom = y + 20, h - 330
+        l, t, r, b = d.textbbox((0, 0), big, font=f)
+        d.text(((w - (r - l)) / 2 - l, top + (bottom - top - (b - t)) / 2 - t), big, font=f, fill=SAGE)
     if body:
         text_block(d, body, font("medium", 40), CHARCOAL, pad, h - 310, w - 2 * pad, center=True)
     if cta:
@@ -160,6 +162,39 @@ def main():
     avatar = Image.new("RGB", (1080, 1080), CREAM)
     paste_fit(avatar, egg, (270, 190, 540, 700))
     save(avatar, "profile", "profile-picture.png")
+
+    # 6. Single: pick your dragon (2x2 of the four accent colours, hatchling stage).
+    pick = Image.new("RGB", (W, H), CREAM)
+    d = ImageDraw.Draw(pick)
+    d.text((90, 110), "PICK YOURS", font=font("demi", 28), fill=COPPER)
+    d.text((90, 180), "Which dragon is yours?", font=font("bold", 76), fill=CHARCOAL)
+    cell, gap, top = 360, 60, 330
+    for i, color in enumerate(("copper", "sage", "gold", "charcoal")):
+        cx = (W - (2 * cell + gap)) // 2 + (i % 2) * (cell + gap)
+        cy = top + (i // 2) * (cell + 50 + gap)
+        paste_fit(pick, art(f"{color}/hatchling-balanced"), (cx, cy, cell, cell))
+        label = color.capitalize()
+        f = font("demi", 36)
+        d.text((cx + (cell - d.textlength(label, font=f)) / 2, cy + cell + 8), label, font=f, fill=CHARCOAL)
+    footer(d, W, H)
+    save(pick, "single", "pick-your-dragon.png")
+
+    # 7. Carousel: how to join the beta (matches the site: you request, then get a TestFlight invite).
+    join = [
+        slide("hook", dragon=egg, eyebrow="Private beta · iPhone", title="How to join the Forge beta.",
+              body="Three steps. No payment."),
+        slide("s1", big="1", eyebrow="Step 1", title="Request an invite.",
+              body="Tap the link in our bio, pop in your email, and you're on the list."),
+        slide("s2", big="2", eyebrow="Step 2", title="Get your TestFlight invite.",
+              body="We email you a link. Open it on your iPhone to install Forge through Apple's TestFlight app."),
+        slide("s3", dragon=hatch, eyebrow="Step 3", title="Hatch your egg.",
+              body="Log a workout and your dragon starts to stir."),
+        slide("expect", dragon=hatch, eyebrow="What to expect", title="It's still being built.",
+              body="iPhone only for now. Some rough edges. Tell us what you think. It shapes what Forge becomes."),
+        slide("cta", dragon=egg, eyebrow="Private beta · iPhone", title="Ready when you are.", cta=True),
+    ]
+    for i, sl in enumerate(join, 1):
+        save(sl, "carousel-how-to-join", f"slide-{i}.png")
 
 
 if __name__ == "__main__":
