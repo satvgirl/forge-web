@@ -60,10 +60,12 @@ def wrap(draw, text, fnt, width):
 
 
 def text_block(draw, text, fnt, fill, x, y, width, spacing=1.25, center=False):
-    for line in wrap(draw, text, fnt, width):
-        tx = x + (width - draw.textlength(line, font=fnt)) / 2 if center else x
-        draw.text((tx, y), line, font=fnt, fill=fill)
-        y += fnt.size * spacing
+    """Wraps text to `width`; a "\n" in the text forces a line break."""
+    for paragraph in text.split("\n"):
+        for line in wrap(draw, paragraph, fnt, width):
+            tx = x + (width - draw.textlength(line, font=fnt)) / 2 if center else x
+            draw.text((tx, y), line, font=fnt, fill=fill)
+            y += fnt.size * spacing
     return y
 
 
@@ -260,6 +262,11 @@ def main():
     post = slide("promise", dragon=hatch, eyebrow="Our promise", title="No leaderboards. No shame.",
                  body="Just your progress, made visible.")
     save(post, "single", "no-leaderboards-no-shame.png")
+
+    # 3b. Single: built by one person (Week 4; wording matches the site's About page).
+    one = slide("one", dragon=egg, eyebrow="Our story", title="Built by one person.",
+                body="Made in Ontario, Canada.\nNo ads. No third-party tracking.")
+    save(one, "single", "built-by-one-person.png")
 
     # 4. Story frame for the invite link sticker (1080x1920; sticker goes in the lower third).
     story = slide("story", dragon=egg, eyebrow="Private beta · iPhone", title="Request your invite.",

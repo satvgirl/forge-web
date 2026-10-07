@@ -70,7 +70,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 **Thu · Carousel: "How to join the beta"** ✅ `assets/carousel-how-to-join/` (6 slides: request an invite → TestFlight invite → hatch your egg → what to expect → link in bio).
 - Caption: *We're looking for early testers on iPhone. Three steps, no payment. You'll shape what Forge becomes.*
 
-**Sat · Single: "Built by one person"** — the egg + "Made in Ontario by one person. No ads. No tracking."
+**Sat · Single: "Built by one person"** ✅ `assets/single/built-by-one-person.png` (egg, "Made in Ontario, Canada. No ads. No third-party tracking.")
 - Caption: *Forge is one person's project, not a company's. If you want strength training to feel kinder, come help build it.*
 
 **Stories:** countdown or "last call" for the current invite batch; recap of the month's best questions.
