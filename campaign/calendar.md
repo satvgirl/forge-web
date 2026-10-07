@@ -64,7 +64,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 ## Week 4 — The invitation
 
 **Tue · Reel: "The moment it evolves"** (10–15s)
-- Footage: the full-screen evolution celebration (debug session `Long-press dragon` triggers it for recording only).
+- Footage ✅ record with `scripts/record_reel.sh <udid> out.mp4 evolve` (app repo), cut with `python3 campaign/edit_reel.py evolve` → `footage/reel-evolve-cut.mp4` (~15 s, captions: "2,600 lbs from Mature." / "One more workout." / "Your dragon evolved." + end card). Demo-account numbers; keep the "Demo account" tag.
 - Caption: *100,000 lbs, lifted a set at a time. This is the moment it all adds up. 🐉*
 
 **Thu · Carousel: "How to join the beta"** ✅ `assets/carousel-how-to-join/` (6 slides: request an invite → TestFlight invite → hatch your egg → what to expect → link in bio).
