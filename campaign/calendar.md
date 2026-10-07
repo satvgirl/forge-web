@@ -51,7 +51,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 - Footage ✅ record with `scripts/record_reel.sh <udid> out.mp4 template` (app repo), cut with `python3 campaign/edit_reel.py template` → `footage/reel-template-cut.mp4` (~15 s, captions: "Start from a template." / "Switch to kg." / "Tick them all." / "Done." + end card). The finish shows the new "Workout logged" card with an animal (a hippo in the demo).
 - Caption: *Same simple logging you'd do on paper, only faster. Templates for your usual days, pounds or kilograms per exercise. Private beta, iPhone — link in bio.*
 
-**Thu · Carousel: "What's new in the beta"** — make screenshots of: kg/lbs menu, share card, CSV export, post-workout card.
+**Thu · Carousel: "What's new in the beta"** ✅ `assets/carousel-whats-new/` (6 slides: hook, kg/lbs, share card, CSV export, post-workout card, CTA). Built from `campaign/stills/` (frames from the recorded footage plus the real `AvatarShareCard` render) — regenerate with `make_assets.py`; if the stills are missing the script skips this carousel.
 - Caption: *Fresh in the beta: kilograms or pounds (even mixed in one workout), a card to share your dragon, and export of all your data to a spreadsheet. Your data is yours. No ads, no third-party tracking.*
 
 **Sat · Single or story-to-post: "Beta notes"** — a genuine tester quote (ask permission) or a "you asked, we built" note from the question box.

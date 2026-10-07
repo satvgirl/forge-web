@@ -149,6 +149,74 @@ def linkedin_banner(scale=1):
     return im
 
 
+STILLS = os.path.join(HERE, "stills")
+
+
+def rounded(im, radius, outline=CHARCOAL, width=4):
+    """Rounded-corner copy of an RGB image with a thin outline."""
+    mask = Image.new("L", im.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, im.width - 1, im.height - 1), radius=radius, fill=255)
+    out = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    out.paste(im.convert("RGB"), (0, 0), mask)
+    ImageDraw.Draw(out).rounded_rectangle((0, 0, im.width - 1, im.height - 1), radius=radius,
+                                          outline=outline, width=width)
+    return out
+
+
+def shot_slide(eyebrow, title, body, still, crop=None):
+    """A feature slide: title on top, a rounded app screenshot, a line of body text.
+
+    `still` is a PNG in campaign/stills/ (frames from the recorded footage, or the
+    real AvatarShareCard render); `crop` is (left, top, right, bottom) in its pixels.
+    """
+    canvas = Image.new("RGB", (W, H), CREAM)
+    d = ImageDraw.Draw(canvas)
+    pad = 90
+    d.text((pad, 110), eyebrow.upper(), font=font("demi", 28), fill=COPPER)
+    size = 70
+    while d.textlength(title, font=font("bold", size)) > W - 2 * pad:
+        size -= 2  # keep the title on one line so the screenshot box stays put
+    d.text((pad, 175), title, font=font("bold", size), fill=CHARCOAL)
+
+    shot = Image.open(os.path.join(STILLS, still)).convert("RGB")
+    if crop:
+        shot = shot.crop(crop)
+    box_w, box_h = 820, 790
+    scale = min(box_w / shot.width, box_h / shot.height)
+    shot = shot.resize((round(shot.width * scale), round(shot.height * scale)), Image.LANCZOS)
+    framed = rounded(shot, 36)
+    canvas.paste(framed, ((W - framed.width) // 2, 320 + (box_h - framed.height) // 2), framed)
+
+    text_block(d, body, font("medium", 38), CHARCOAL, pad, 1140, W - 2 * pad, center=True)
+    footer(d, W, H)
+    return canvas
+
+
+def whatsnew_carousel(egg):
+    """Week 3 carousel: what's new in the beta (needs campaign/stills/, see README)."""
+    needed = ["kg-converted.png", "share-card.png", "export-sheet.png", "post-workout-card.png"]
+    missing = [n for n in needed if not os.path.exists(os.path.join(STILLS, n))]
+    if missing:
+        print("skipping what's-new carousel; missing stills:", ", ".join(missing))
+        return
+    slides = [
+        slide("hook", dragon=egg, eyebrow="Fresh in the beta", title="What's new in Forge.",
+              body="Four updates. Swipe to see them."),
+        # Phone frames are 1206x2622; crops pick the part of the screen that matters.
+        shot_slide("Update 1", "Kilograms or pounds.", "Choose per exercise. Mix them in one workout.",
+                   "kg-converted.png", crop=(0, 880, 1206, 2042)),
+        shot_slide("Update 2", "Share your dragon.", "A picture card of your companion, ready for the share sheet.",
+                   "share-card.png"),
+        shot_slide("Update 3", "Your data is yours.", "Export every logged set as a spreadsheet. No ads, no third-party tracking.",
+                   "export-sheet.png", crop=(0, 180, 1206, 1300)),
+        shot_slide("Update 4", "A bigger celebration.", "Every finished workout ends with an animal to compare your lifting to.",
+                   "post-workout-card.png", crop=(60, 835, 1146, 1840)),
+        slide("cta", dragon=egg, eyebrow="Private beta · iPhone", title="Want to try it?", cta=True),
+    ]
+    for i, sl in enumerate(slides, 1):
+        save(sl, "carousel-whats-new", f"slide-{i}.png")
+
+
 def main():
     egg = art("copper/egg")
     hatch = art("copper/hatchling-balanced")
@@ -206,6 +274,9 @@ def main():
     # 8. LinkedIn banner (personal profile), 1x and 2x.
     save(linkedin_banner(1), "linkedin", "banner-1584x396.png")
     save(linkedin_banner(2), "linkedin", "banner-3168x792.png")
+
+    # 5b. Carousel: what's new in the beta (Week 3).
+    whatsnew_carousel(egg)
 
     # 6. Single: pick your dragon (2x2 of the four accent colours, hatchling stage).
     pick = Image.new("RGB", (W, H), CREAM)
