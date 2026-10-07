@@ -112,36 +112,37 @@ def save(img, folder, name):
 def linkedin_banner(scale=1):
     """LinkedIn profile banner, 1584x396 (scale=2 for a sharper 3168x792 upload).
 
-    Layout rules: the profile photo covers the lower-left (~x 30-260), and the
-    mobile app crops the edges, so text starts at x=330 and everything that
-    matters stays inside x 330-1500, y 40-360. The four dragon stages grow left to right.
+    Layout rules, measured from a real desktop screenshot: the profile photo is a
+    ~314 px circle at banner scale, spanning x 50-370 and from y~150 down, so all
+    text starts at x=430. The mobile app crops the edges, so keep everything
+    that matters inside x 430-1520, y 40-360. The four dragon stages grow left to right.
     """
     S = scale
     w, h = 1584 * S, 396 * S
     im = Image.new("RGB", (w, h), CREAM)
     d = ImageDraw.Draw(im)
 
-    x = 330 * S
+    x = 430 * S
     d.text((x, 62 * S), "FORGE", font=font("demi", 22 * S), fill=COPPER)
     y = 108 * S
     for line in ("Build your dragon,", "build yourself."):
-        d.text((x, y), line, font=font("bold", 50 * S), fill=CHARCOAL)
-        y += 62 * S
-    d.text((x, y + 14 * S), "Strength training with a companion", font=font("medium", 24 * S), fill=CHARCOAL)
-    d.text((x, y + 46 * S), "that grows as you do.", font=font("medium", 24 * S), fill=CHARCOAL)
+        d.text((x, y), line, font=font("bold", 46 * S), fill=CHARCOAL)
+        y += 58 * S
+    d.text((x, y + 14 * S), "Strength training with a companion", font=font("medium", 22 * S), fill=CHARCOAL)
+    d.text((x, y + 44 * S), "that grows as you do.", font=font("medium", 22 * S), fill=CHARCOAL)
     d.text((x, 338 * S), "forge-app.ca", font=font("demi", 22 * S), fill=COPPER)
 
-    stages = [("copper/egg", 84), ("copper/hatchling-balanced", 120),
-              ("copper/fledgling-balanced", 176), ("copper/mature-fierce", 236)]
-    gap = 16 * S
+    stages = [("copper/egg", 76), ("copper/hatchling-balanced", 108),
+              ("copper/fledgling-balanced", 160), ("copper/mature-fierce", 214)]
+    gap = 14 * S
     sized = []
     for name, height in stages:
         dragon = art(name)
         scale_f = height * S / dragon.height
         sized.append(dragon.resize((round(dragon.width * scale_f), round(dragon.height * scale_f)), Image.LANCZOS))
-    # Right-align the group to the margin (1500 of 1584) so nothing is clipped.
-    cx = 1500 * S - (sum(dr.width for dr in sized) + gap * (len(sized) - 1))
-    assert cx >= 760 * S, "stages overlap the text; shrink them"
+    # Right-align the group to the margin (1520 of 1584) so nothing is clipped.
+    cx = 1520 * S - (sum(dr.width for dr in sized) + gap * (len(sized) - 1))
+    assert cx >= 880 * S, "stages overlap the text; shrink them"
     for dragon in sized:
         im.paste(dragon, (cx, 360 * S - dragon.height), dragon)
         cx += dragon.width + gap
