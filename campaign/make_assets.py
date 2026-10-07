@@ -109,6 +109,45 @@ def save(img, folder, name):
     print("wrote", folder, name)
 
 
+def linkedin_banner(scale=1):
+    """LinkedIn profile banner, 1584x396 (scale=2 for a sharper 3168x792 upload).
+
+    Layout rules: the profile photo covers the lower-left (~x 30-260), and the
+    mobile app crops the edges, so text starts at x=330 and everything that
+    matters stays inside x 330-1500, y 40-360. The four dragon stages grow left to right.
+    """
+    S = scale
+    w, h = 1584 * S, 396 * S
+    im = Image.new("RGB", (w, h), CREAM)
+    d = ImageDraw.Draw(im)
+
+    x = 330 * S
+    d.text((x, 62 * S), "FORGE", font=font("demi", 22 * S), fill=COPPER)
+    y = 108 * S
+    for line in ("Build your dragon,", "build yourself."):
+        d.text((x, y), line, font=font("bold", 50 * S), fill=CHARCOAL)
+        y += 62 * S
+    d.text((x, y + 14 * S), "Strength training with a companion", font=font("medium", 24 * S), fill=CHARCOAL)
+    d.text((x, y + 46 * S), "that grows as you do.", font=font("medium", 24 * S), fill=CHARCOAL)
+    d.text((x, 338 * S), "forge-app.ca", font=font("demi", 22 * S), fill=COPPER)
+
+    stages = [("copper/egg", 84), ("copper/hatchling-balanced", 120),
+              ("copper/fledgling-balanced", 176), ("copper/mature-fierce", 236)]
+    gap = 16 * S
+    sized = []
+    for name, height in stages:
+        dragon = art(name)
+        scale_f = height * S / dragon.height
+        sized.append(dragon.resize((round(dragon.width * scale_f), round(dragon.height * scale_f)), Image.LANCZOS))
+    # Right-align the group to the margin (1500 of 1584) so nothing is clipped.
+    cx = 1500 * S - (sum(dr.width for dr in sized) + gap * (len(sized) - 1))
+    assert cx >= 760 * S, "stages overlap the text; shrink them"
+    for dragon in sized:
+        im.paste(dragon, (cx, 360 * S - dragon.height), dragon)
+        cx += dragon.width + gap
+    return im
+
+
 def main():
     egg = art("copper/egg")
     hatch = art("copper/hatchling-balanced")
@@ -162,6 +201,10 @@ def main():
     avatar = Image.new("RGB", (1080, 1080), CREAM)
     paste_fit(avatar, egg, (270, 190, 540, 700))
     save(avatar, "profile", "profile-picture.png")
+
+    # 8. LinkedIn banner (personal profile), 1x and 2x.
+    save(linkedin_banner(1), "linkedin", "banner-1584x396.png")
+    save(linkedin_banner(2), "linkedin", "banner-3168x792.png")
 
     # 6. Single: pick your dragon (2x2 of the four accent colours, hatchling stage).
     pick = Image.new("RGB", (W, H), CREAM)
