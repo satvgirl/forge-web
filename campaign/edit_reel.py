@@ -1,10 +1,11 @@
 """First cuts of the Instagram reels from raw simulator captures.
 
-Run:  python3 campaign/edit_reel.py [hatch|rest]      (default: hatch)
+Run:  python3 campaign/edit_reel.py [hatch|rest|template]      (default: hatch)
 In:   campaign/footage/reel-<name>-raw.mp4   (scripts/record_reel.sh <udid> out.mp4 <hatch|rest>)
 Out:  campaign/footage/reel-<name>-cut.mp4   (1080x1920, 30 fps, silent)
       hatch ~25 s  "One workout. One hatch."
-      rest  ~14 s  "A quiet week" (rest is part of it)
+      rest  ~15 s  "A quiet week" (rest is part of it)
+      template ~15 s  "Start from a template" (kg switch, tick all, done)
 
 Needs ffmpeg and Pillow. Segment times are seconds in the 30 fps conversion of
 the raw take (footage/reel-<name>-30fps.mp4, written by this script): scrub that
@@ -42,6 +43,12 @@ REELS = {
         (55.5, 57.0, 3.0, None),                    # Finish tap
         (60.0, 65.5, 1.0, "Your dragon hatched."),  # celebration
         (70.0, 73.0, 1.2, "Every set counts."),     # Progress
+    ]),
+    "template": dict(pill_y=1440, min_pill=0, segments=[
+        (14.5, 20.5, 2.0, "Start from a template."),  # Templates list -> Start -> sheet opens
+        (24.5, 29.5, 1.5, "Switch to kg."),           # unit menu, weights convert
+        (31.5, 36.5, 2.0, "Tick them all."),          # Check all sets
+        (38.5, 41.5, 1.0, "Done."),                   # "Workout logged" card + animal
     ]),
     # The pill sits higher here so it covers Home's free-tier nudge row.
     "rest": dict(pill_y=1295, min_pill=PHONE_W - 30, segments=[

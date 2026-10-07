@@ -48,7 +48,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 ## Week 3 — Inside the beta
 
 **Tue · Reel: "Log a set in seconds"** (15s)
-- Footage: start a workout from a template, tick off sets, switch an exercise to kg.
+- Footage ✅ record with `scripts/record_reel.sh <udid> out.mp4 template` (app repo), cut with `python3 campaign/edit_reel.py template` → `footage/reel-template-cut.mp4` (~15 s, captions: "Start from a template." / "Switch to kg." / "Tick them all." / "Done." + end card). The finish shows the new "Workout logged" card with an animal (a hippo in the demo).
 - Caption: *Same simple logging you'd do on paper, only faster. Templates for your usual days, pounds or kilograms per exercise. Private beta, iPhone — link in bio.*
 
 **Thu · Carousel: "What's new in the beta"** — make screenshots of: kg/lbs menu, share card, CSV export, post-workout card.
