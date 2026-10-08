@@ -29,8 +29,11 @@ LOG = os.path.join(HERE, "signups.log")
 
 def wrangler(*args, attempts=3):
     for attempt in range(1, attempts + 1):
-        result = subprocess.run(["npx", "wrangler", *args, "--namespace-id", NS, "--remote"],
-                                capture_output=True, text=True, cwd=REPO)
+        try:
+            result = subprocess.run(["npx", "wrangler", *args, "--namespace-id", NS, "--remote"],
+                                    capture_output=True, text=True, cwd=REPO, timeout=90)
+        except subprocess.TimeoutExpired:  # wrangler occasionally hangs on the network
+            result = subprocess.CompletedProcess(args, 124, "", "timed out after 90 s")
         if result.returncode == 0:
             # wrangler prints a login banner before the JSON.
             out = result.stdout
