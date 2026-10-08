@@ -259,15 +259,15 @@ def stories(egg, hatch):
     frame leaves that area empty (poll/question: bottom third; countdown: below the egg).
     Not built: the week-2 poll results and the week-4 question recap (they need real answers).
     """
-    # Week 1: colour poll. The poll sticker only offers two answers, so use the
-    # question sticker ("Which colour?") or run it as two polls.
+    # Week 1: colour poll. A four-answer poll sticker is tall (~700 px), so the
+    # dragons sit in one row at the top and everything below y~950 is left clear.
     s, d, _ = story_frame("Poll", "Which dragon would you pick?")
-    cell, gap, top = 300, 60, 640
+    cell, gap = 230, 24
     for i, color in enumerate(("copper", "sage", "gold", "charcoal")):
-        cx = (SW - (2 * cell + gap)) // 2 + (i % 2) * (cell + gap)
-        cy = top + (i // 2) * (cell + 60 + gap)
+        cx = (SW - (4 * cell + 3 * gap)) // 2 + i * (cell + gap)
+        cy = 560
         paste_fit(s, art(f"{color}/hatchling-balanced"), (cx, cy, cell, cell))
-        f = font("demi", 34)
+        f = font("demi", 30)
         d.text((cx + (cell - d.textlength(color.capitalize(), font=f)) / 2, cy + cell + 8),
                color.capitalize(), font=f, fill=CHARCOAL)
     save(s, "story", "poll-dragon-colour.png")

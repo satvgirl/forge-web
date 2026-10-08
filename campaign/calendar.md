@@ -25,7 +25,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 **Sat · Single: "No leaderboards. No shame."** ✅ `assets/single/no-leaderboards-no-shame.png`
 - Caption: *No leaderboards. No streak-shaming. No one to compare yourself to but you. Just your progress, made visible. Request an invite — link in bio.*
 
-**Stories (2–3):** (1) ✅ `assets/story/poll-dragon-colour.png` — poll "Which dragon colour would you pick?" copper / sage / gold / charcoal (the poll sticker only takes two answers: use the question sticker, or two polls); (2) ✅ `assets/story/behind-the-scenes-hatchling.png`; (3) ✅ `assets/story/request-invite.png` with a link sticker → `?src=instagram-story`.
+**Stories (2–3):** (1) ✅ `assets/story/poll-dragon-colour.png` — poll "Which dragon colour would you pick?" copper / sage / gold / charcoal (dragons sit in a row at the top; add a 4-answer poll sticker in the lower half, in the same order); (2) ✅ `assets/story/behind-the-scenes-hatchling.png`; (3) ✅ `assets/story/request-invite.png` with a link sticker → `?src=instagram-story`.
 
 ---
 
