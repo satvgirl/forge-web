@@ -219,6 +219,101 @@ def whatsnew_carousel(egg):
         save(sl, "carousel-whats-new", f"slide-{i}.png")
 
 
+SW, SH = 1080, 1920  # Instagram story
+# Instagram's own UI covers roughly the top 250 px and bottom 250 px of a story;
+# keep text inside SAFE_TOP..SAFE_BOTTOM and leave sticker space clear.
+SAFE_TOP, SAFE_BOTTOM = 250, 1670
+
+
+def story_frame(eyebrow, title):
+    """Blank story canvas with eyebrow + title; returns (canvas, draw, y below the title)."""
+    canvas = Image.new("RGB", (SW, SH), CREAM)
+    d = ImageDraw.Draw(canvas)
+    pad = 90
+    d.text((pad, SAFE_TOP), eyebrow.upper(), font=font("demi", 28), fill=COPPER)
+    y = text_block(d, title, font("bold", 76), CHARCOAL, pad, SAFE_TOP + 70, SW - 2 * pad)
+    d.text(((SW - d.textlength("FORGE", font=font("demi", 26))) / 2, SAFE_BOTTOM - 60), "FORGE",
+           font=font("demi", 26), fill=COPPER)
+    return canvas, d, y
+
+
+def story_choice(eyebrow, title, left, right):
+    """This-or-that story: two outlined option cards, sticker space below."""
+    canvas, d, _ = story_frame(eyebrow, title)
+    card_w, card_h, gap, top = 440, 480, 80, 700
+    x0 = (SW - (2 * card_w + gap)) // 2
+    for i, (name, note) in enumerate((left, right)):
+        x = x0 + i * (card_w + gap)
+        d.rounded_rectangle((x, top, x + card_w, top + card_h), radius=36, outline=CHARCOAL, width=5)
+        y = text_block(d, name, font("bold", 54), CHARCOAL, x + 30, top + 130, card_w - 60, center=True)
+        text_block(d, note, font("medium", 34), COPPER, x + 30, y + 14, card_w - 60, center=True)
+    f = font("demi", 36)
+    d.text((SW / 2 - d.textlength("or", font=f) / 2, top + card_h / 2 - 22), "or", font=f, fill=COPPER)
+    return canvas
+
+
+def stories(egg, hatch):
+    """Story frames for the calendar's polls, question box, share card and last call.
+
+    Poll, question and countdown stickers are added in the Instagram app; each
+    frame leaves that area empty (poll/question: bottom third; countdown: below the egg).
+    Not built: the week-2 poll results and the week-4 question recap (they need real answers).
+    """
+    # Week 1: colour poll. The poll sticker only offers two answers, so use the
+    # question sticker ("Which colour?") or run it as two polls.
+    s, d, _ = story_frame("Poll", "Which dragon would you pick?")
+    cell, gap, top = 300, 60, 640
+    for i, color in enumerate(("copper", "sage", "gold", "charcoal")):
+        cx = (SW - (2 * cell + gap)) // 2 + (i % 2) * (cell + gap)
+        cy = top + (i // 2) * (cell + 60 + gap)
+        paste_fit(s, art(f"{color}/hatchling-balanced"), (cx, cy, cell, cell))
+        f = font("demi", 34)
+        d.text((cx + (cell - d.textlength(color.capitalize(), font=f)) / 2, cy + cell + 8),
+               color.capitalize(), font=f, fill=CHARCOAL)
+    save(s, "story", "poll-dragon-colour.png")
+
+    # Week 1: behind the scenes (only states what the app does: stage 2 at 20,000 lbs).
+    s, d, y = story_frame("Behind the scenes", "Meet the hatchling.")
+    paste_fit(s, hatch, (140, y + 40, SW - 280, 760))
+    text_block(d, "Stage 2 of 4. It hatches after 20,000 lbs of lifting, total.", font("medium", 40),
+               CHARCOAL, 90, y + 840, SW - 180, center=True)
+    save(s, "story", "behind-the-scenes-hatchling.png")
+
+    # Week 2: question box.
+    s, d, y = story_frame("Ask the beta", "What would make you stick with strength training?")
+    paste_fit(s, egg, (SW // 2 - 150, y + 40, 300, 380))
+    save(s, "story", "question-box.png")
+
+    # Week 3: the share card (real AvatarShareCard render).
+    shot = os.path.join(STILLS, "share-card.png")
+    if os.path.exists(shot):
+        s, d, y = story_frame("Fresh in the beta", "Share your dragon.")
+        card = rounded(Image.open(shot).convert("RGB").resize((680, 850), Image.LANCZOS), 36)
+        s.paste(card, ((SW - card.width) // 2, int(y) + 40), card)
+        text_block(d, "A picture card of your companion.", font("medium", 40), CHARCOAL, 90,
+                   y + 40 + card.height + 40, SW - 180, center=True)
+        save(s, "story", "share-card.png")
+    else:
+        print("skipping share-card story; missing stills/share-card.png")
+
+    # Week 3: this-or-that on real roadmap items (asks only; promises nothing).
+    save(story_choice("This or that", "What should we build first?",
+                      ("Supersets", "Pair exercises, alternate sets"),
+                      ("Timed exercises", "Cycling, walking, no reps")),
+         "story", "this-or-that-1.png")
+    save(story_choice("This or that", "And what after that?",
+                      ("Apple Watch app", "Log from your wrist"),
+                      ("Exercise demos", "See how each move looks")),
+         "story", "this-or-that-2.png")
+
+    # Week 4: last call. Add a countdown sticker in the gap above the text.
+    s, d, y = story_frame("Last call · Private beta · iPhone", "Last call for this invite batch.")
+    paste_fit(s, egg, (SW // 2 - 190, y + 30, 380, 480))
+    text_block(d, "Request yours before it closes. Link below.", font("medium", 40), CHARCOAL, 90,
+               y + 800, SW - 180, center=True)
+    save(s, "story", "last-call.png")
+
+
 def main():
     egg = art("copper/egg")
     hatch = art("copper/hatchling-balanced")
@@ -272,6 +367,7 @@ def main():
     story = slide("story", dragon=egg, eyebrow="Private beta · iPhone", title="Request your invite.",
                   body="Tap the link below", w=1080, h=1920)
     save(story, "story", "request-invite.png")
+    stories(egg, hatch)
 
     # 5. Profile picture: the egg on cream (Instagram crops to a circle, so keep it centred and small).
     avatar = Image.new("RGB", (1080, 1080), CREAM)

@@ -25,7 +25,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 **Sat · Single: "No leaderboards. No shame."** ✅ `assets/single/no-leaderboards-no-shame.png`
 - Caption: *No leaderboards. No streak-shaming. No one to compare yourself to but you. Just your progress, made visible. Request an invite — link in bio.*
 
-**Stories (2–3):** (1) poll "Which dragon colour would you pick?" copper / sage / gold / charcoal; (2) behind the scenes: the hatchling art; (3) ✅ `assets/story/request-invite.png` with a link sticker → `?src=instagram-story`.
+**Stories (2–3):** (1) ✅ `assets/story/poll-dragon-colour.png` — poll "Which dragon colour would you pick?" copper / sage / gold / charcoal (the poll sticker only takes two answers: use the question sticker, or two polls); (2) ✅ `assets/story/behind-the-scenes-hatchling.png`; (3) ✅ `assets/story/request-invite.png` with a link sticker → `?src=instagram-story`.
 
 ---
 
@@ -41,7 +41,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 **Sat · Single: "Pick your dragon"** ✅ `assets/single/pick-your-dragon.png` (2×2 of the four colours)
 - Caption: *Copper, sage, gold or charcoal. Which one's yours? Tell me below. In Forge you pick at the start, and it's yours.*
 
-**Stories:** poll results from week 1; a question box "What would make you stick with strength training?" (real insight for the app).
+**Stories:** poll results from week 1; ✅ `assets/story/question-box.png` — question box "What would make you stick with strength training?" (real insight for the app).
 
 ---
 
@@ -57,7 +57,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 **Sat · Single or story-to-post: "Beta notes"** — a genuine tester quote (ask permission) or a "you asked, we built" note from the question box.
 - Caption: *You said it. We built it. Keep it coming.*
 
-**Stories:** the share card as a story; "this or that" poll on feature ideas.
+**Stories:** ✅ `assets/story/share-card.png`; ✅ "this or that" polls on feature ideas, `assets/story/this-or-that-1.png` (supersets / timed exercises) and `this-or-that-2.png` (Apple Watch app / exercise demos) — add the poll sticker in the app.
 
 ---
 
@@ -73,7 +73,7 @@ Suggested hashtags (use 5–8 per post, rotate): #strengthtrainingforwomen
 **Sat · Single: "Built by one person"** ✅ `assets/single/built-by-one-person.png` (egg, "Made in Ontario, Canada. No ads. No third-party tracking.")
 - Caption: *Forge is one person's project, not a company's. If you want strength training to feel kinder, come help build it.*
 
-**Stories:** countdown or "last call" for the current invite batch; recap of the month's best questions.
+**Stories:** ✅ `assets/story/last-call.png` (add a countdown sticker in the gap under the egg) for the current invite batch; recap of the month's best questions.
 
 ---
 
